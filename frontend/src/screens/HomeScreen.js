@@ -13,7 +13,6 @@ const HomeScreen = () => {
     const productList = useSelector(state => state.productList)
 
     const { loading, error, products } = productList
-    console.log(productList)
 
     // UseEffect triggers as soon as the component loads.
     useEffect(() => {
