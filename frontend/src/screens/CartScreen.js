@@ -46,10 +46,17 @@ const CartScreen = ({ match, location, history }) => {
                             <ListGroup.Item key={item.product}>
                                 <Row>
                                     <Col md={2}>
-                                        <Image src={item.image} alt={item.name} fluid rounded />
+                                        <Image
+                                            src={item.image}
+                                            alt={item.name}
+                                            fluid
+                                            rounded
+                                        />
                                     </Col>
                                     <Col md={3}>
-                                        <Link to={`/product/${item.product}`}>{item.name}</Link>
+                                        <Link to={`/product/${item.product}`}>
+                                            {item.name}
+                                        </Link>
                                     </Col>
                                     <Col md={2}>${item.price}</Col>
                                     <Col md={2}>
@@ -58,12 +65,22 @@ const CartScreen = ({ match, location, history }) => {
                                             value={item.qty}
                                             onChange={e =>
                                                 dispatch(
-                                                    addToCart(item.product, Number(e.target.value))
+                                                    addToCart(
+                                                        item.product,
+                                                        Number(e.target.value)
+                                                    )
                                                 )
                                             }
                                         >
-                                            {[...Array(item.countInStock).keys()].map(x => (
-                                                <option key={x + 1} value={x + 1}>
+                                            {[
+                                                ...Array(
+                                                    item.countInStock
+                                                ).keys()
+                                            ].map(x => (
+                                                <option
+                                                    key={x + 1}
+                                                    value={x + 1}
+                                                >
                                                     {x + 1}
                                                 </option>
                                             ))}
@@ -73,7 +90,11 @@ const CartScreen = ({ match, location, history }) => {
                                         <Button
                                             type='button'
                                             variant='light'
-                                            onClick={() => removeFromCartHandler(item.product)}
+                                            onClick={() =>
+                                                removeFromCartHandler(
+                                                    item.product
+                                                )
+                                            }
                                         >
                                             <i className='fas fa-trash' />
                                         </Button>
@@ -89,12 +110,19 @@ const CartScreen = ({ match, location, history }) => {
                     <ListGroup variant='flush'>
                         <ListGroup.Item>
                             <h2>
-                                Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)})
-                                items
+                                Subtotal (
+                                {cartItems.reduce(
+                                    (acc, item) => acc + item.qty,
+                                    0
+                                )}
+                                ) items
                             </h2>
                             $
                             {cartItems
-                                .reduce((acc, item) => acc + item.qty * item.price, 0)
+                                .reduce(
+                                    (acc, item) => acc + item.qty * item.price,
+                                    0
+                                )
                                 .toFixed(2)}
                         </ListGroup.Item>
                         <ListGroup.Item>
