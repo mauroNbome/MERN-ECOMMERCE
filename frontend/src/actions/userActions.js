@@ -13,7 +13,17 @@ import {
     USER_DETAILS_RESET,
     USER_UPDATE_PROFILE_REQUEST,
     USER_UPDATE_PROFILE_SUCCESS,
-    USER_UPDATE_PROFILE_FAIL
+    USER_UPDATE_PROFILE_FAIL,
+    USER_LIST_REQUEST,
+    USER_LIST_SUCCESS,
+    USER_LIST_FAIL,
+    USER_LIST_RESET,
+    USER_DELETE_REQUEST,
+    USER_DELETE_SUCCESS,
+    USER_DELETE_FAIL,
+    USER_UPDATE_REQUEST,
+    USER_UPDATE_SUCCESS,
+    USER_UPDATE_FAIL
 } from '../constants/userConstants'
 
 import { ORDER_MYORDERS_RESET } from '../constants/orderConstants'
@@ -61,6 +71,7 @@ export const logout = () => async dispatch => {
     dispatch({ type: USER_LOGOUT })
     dispatch({ type: ORDER_MYORDERS_RESET })
     dispatch({ type: USER_DETAILS_RESET })
+    dispatch({ type: USER_LIST_RESET })
 }
 
 export const register = (name, email, password) => async dispatch => {
@@ -173,6 +184,116 @@ export const updateUserProfile = user => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: USER_UPDATE_PROFILE_FAIL,
+            // Sending generic err message, and also the custom one (in the payload).
+            payload:
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message
+        })
+    }
+}
+
+export const listUsers = () => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: USER_LIST_REQUEST
+        })
+
+        // Destructuring 2 levels =>
+        const {
+            userLogin: { userInfo }
+        } = getState()
+
+        // We need to send this in the headers, used for authorization.
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        const { data } = await axios.get(`/api/users`, config)
+
+        // If reqest is succeded:
+        dispatch({
+            type: USER_LIST_SUCCESS,
+            payload: data
+        })
+    } catch (error) {
+        dispatch({
+            type: USER_LIST_FAIL,
+            // Sending generic err message, and also the custom one (in the payload).
+            payload:
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message
+        })
+    }
+}
+
+export const deleteUser = id => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: USER_DELETE_REQUEST
+        })
+
+        // Destructuring 2 levels =>
+        const {
+            userLogin: { userInfo }
+        } = getState()
+
+        // We need to send this in the headers, used for authorization.
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        await axios.delete(`/api/users/${id}`, config)
+
+        // If reqest is succeded:
+        dispatch({ type: USER_DELETE_SUCCESS })
+    } catch (error) {
+        dispatch({
+            type: USER_DELETE_FAIL,
+            // Sending generic err message, and also the custom one (in the payload).
+            payload:
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message
+        })
+    }
+}
+
+export const updateUser = user => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: USER_UPDATE_REQUEST
+        })
+
+        // Destructuring 2 levels =>
+        const {
+            userLogin: { userInfo }
+        } = getState()
+
+        // We need to send this in the headers, used for authorization.
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        const { data } = await axios.put(`/api/users/${user._id}`, user, config)
+
+        // Dispatch update succes and then dispatch user details to fetch fresh data.
+        dispatch({ type: USER_UPDATE_SUCCESS })
+
+        dispatch({ type: USER_DETAILS_SUCCESS, payload: data })
+
+        dispatch({ type: USER_DETAILS_RESET })
+    } catch (error) {
+        dispatch({
+            type: USER_UPDATE_FAIL,
             // Sending generic err message, and also the custom one (in the payload).
             payload:
                 error.response && error.response.data.message
